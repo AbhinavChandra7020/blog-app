@@ -3,6 +3,6 @@ compatibility_date = "2023-12-01"
 
 [vars]
 MY_VAR = "my-variable"
-DATABASE_URL=""
-JWT_SECRET = ""
+DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZDZmZTRlZDktYWEzMC00NjAyLWFkMzgtYTg2YWZlYzk1M2NlIiwidGVuYW50X2lkIjoiN2JkZWE2ODcwZTI0NzBmMDU5NjFhZjJjNTVjZWMzYzNiZWNiOTJkOTQxM2MyMzJhMDc3ODY3MmQ4ZDdjYjUwMiIsImludGVybmFsX3NlY3JldCI6IjgxYjNhYmZkLTBjZjEtNGNkYS04NjYwLTgwZjVlY2M3N2ZkZCJ9.D8G8alc9qTj_ol4Yrw2ueJOopNuLuXYINJNIdKE9dYw"
+JWT_SECRET = "shhhhh-secret-password"
 
