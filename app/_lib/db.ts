@@ -14,8 +14,8 @@ declare global {
   };
 }
 
-/* To make it so that only one connection is made per api call via caching and not multiple calls which would overload the mongodb connection limit. 
-*/
+// To make it so that only one connection is made per api call via caching and not multiple calls which would overload the mongodb connection limit. 
+
 
 let cached = global.mongoose;
 
