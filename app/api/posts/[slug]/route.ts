@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/app/_lib/db';
 import Post from '@/app/_lib/models/Post';
 import slugify from '@/app/_utils/slugify';
+import { generateMetaFields } from '@/app/_utils/metaGen';
 
 // GET single post by slug OR search by keyword in slug
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -40,7 +41,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
           content: post.content,
           createdAt: post.createdAt,
           slug: post.slug,
-          updatedAt: post.updatedAt
+          updatedAt: post.updatedAt,
+          metaTitle: post.metaTitle,
+          metaDescription: post.metaDescription
         }
       });
     }
@@ -65,31 +68,43 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 }
 
 // PUT - Update post by slug
-export async function PUT(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function PUT(request: Request, { params }: { params: { slug: string }}) {
   try {
     await connectDB();
     
-    // NEXTJS 15 FIX: Await params before using
     const { slug } = await params;
     const body = await request.json();
     const { title, content } = body; // Only title and content as per requirements
+    
+    // Get existing post for reference
+    const existingPost = await Post.findOne({ slug });
+    if (!existingPost) {
+      return NextResponse.json(
+        { success: false, message: 'Post not found' },
+        { status: 404 }
+      );
+    }
     
     // Build update object only with provided fields
     const updateData: any = {
       updatedAt: new Date()
     };
     
+    // Determine final title and content for meta generation
+    const finalTitle = title !== undefined ? title : existingPost.title;
+    const finalContent = content !== undefined ? content : existingPost.content;
+    
     // Only update title if provided
     if (title !== undefined) {
       updateData.title = title;
       
-      // If title is being updated, generate new slug
+      // AUTOMATIC: Generate new slug when title changes
       const newSlug = slugify(title);
       
       // Check if new slug already exists (and it's not the current post)
       if (newSlug !== slug) {
-        const existingPost = await Post.findOne({ slug: newSlug });
-        if (existingPost) {
+        const existingSlugPost = await Post.findOne({ slug: newSlug });
+        if (existingSlugPost) {
           return NextResponse.json(
             { success: false, message: 'A post with this title already exists' },
             { status: 409 }
@@ -104,19 +119,19 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
       updateData.content = content;
     }
     
+    // AUTOMATIC: Always regenerate meta fields when title OR content changes
+    if (title !== undefined || content !== undefined) {
+      const metaFields = generateMetaFields(finalTitle, finalContent);
+      updateData.metaTitle = metaFields.metaTitle;
+      updateData.metaDescription = metaFields.metaDescription;
+    }
+    
     // Update post in MongoDB
     const updatedPost = await Post.findOneAndUpdate(
       { slug },
       updateData,
       { new: true, runValidators: true }
     );
-    
-    if (!updatedPost) {
-      return NextResponse.json(
-        { success: false, message: 'Post not found' },
-        { status: 404 }
-      );
-    }
     
     // Return updated post data
     return NextResponse.json({

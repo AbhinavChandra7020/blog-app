@@ -1,11 +1,5 @@
-import Image from "next/image";
-import connectDB from "./_lib/db";
+import HomePage from './_components/pages/Homepage'
 
-export default function Home() {
-  console.log(process.env.MONGODB_URI)
-  return (
-    <div>
-      hi there
-    </div>
-  );
+export default function Page() {
+  return <HomePage />
 }
