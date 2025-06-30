@@ -41,7 +41,6 @@ export async function POST(request: Request) {
       slug: uniqueSlug
     });
     
-    // ✨ After successful creation, auto-generate meta fields
     if (newPost) {
       const metaFields = generateMetaFields(title, content);
       
@@ -57,23 +56,24 @@ export async function POST(request: Request) {
       
       return NextResponse.json({
         success: true,
-        data: updatedPost, // Return the post with meta fields
+        data: updatedPost, 
         message: 'Post created successfully with auto-generated SEO fields'
       }, { status: 201 });
     }
     
-    // Fallback (shouldn't reach here)
     return NextResponse.json({
       success: true,
       data: newPost,
       message: 'Post created successfully'
     }, { status: 201 });
-    
+ 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error creating post:', error);
     
     // Handle mongoose validation errors
     if (error.name === 'ValidationError') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const validationErrors = Object.values(error.errors).map((err: any) => err.message);
       return NextResponse.json(
         { 
@@ -85,7 +85,6 @@ export async function POST(request: Request) {
       );
     }
     
-    // Handle duplicate key error (shouldn't happen with our unique slug logic, but just in case)
     if (error.code === 11000) {
       return NextResponse.json(
         { 

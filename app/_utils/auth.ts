@@ -1,8 +1,9 @@
-// app/_utils/auth.ts
-import NextAuth from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { JWT } from 'next-auth/jwt';
+import { Session, User } from 'next-auth';
 
-const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -33,27 +34,38 @@ const authOptions = {
     strategy: 'jwt'
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: JWT;
+      user?: User & { role?: string };
+    }) {
       if (user) {
         token.role = user.role;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({
+      session,
+      token,
+    }: {
+      session: Session;
+      token: JWT;
+    }) {
       if (session.user) {
         session.user.id = token.sub;
-        session.user.role = token.role;
+        session.user.role = token.role as string;
       }
       return session;
     }
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/auth/signin'
   }
 };
 
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
-export { authOptions };

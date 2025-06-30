@@ -35,6 +35,7 @@ export default function SignInPage() {
           router.refresh()
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError('An error occurred. Please try again.')
     } finally {

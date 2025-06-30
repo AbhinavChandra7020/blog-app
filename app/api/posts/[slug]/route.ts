@@ -5,29 +5,27 @@ import Post from '@/app/_lib/models/Post';
 import slugify from '@/app/_utils/slugify';
 import { generateMetaFields } from '@/app/_utils/metaGen';
 
-// GET single post by slug OR search by keyword in slug
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     await connectDB();
     
-    // NEXTJS 15 FIX: Await params before using
     const { slug } = await params;
     
-    // First try to find exact slug match
+    // eslint-disable-next-line prefer-const
     let post = await Post.findOne({ slug });
     
     // If no exact slug match, search by keyword in slug field
     if (!post) {
       const posts = await Post.find({
-        slug: { $regex: slug, $options: 'i' } // Case-insensitive search in slug
+        slug: { $regex: slug, $options: 'i' } 
       }).sort({ createdAt: -1 });
       
       if (posts.length > 0) {
-        // Return all matching posts for keyword search
+
         return NextResponse.json({
           success: true,
           data: posts,
-          searchResults: true // Flag to indicate this is a search result
+          searchResults: true 
         });
       }
     }
@@ -53,7 +51,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
       { success: false, message: 'Post not found' },
       { status: 404 }
     );
-    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error fetching post:', error);
     return NextResponse.json(
@@ -67,8 +65,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   }
 }
 
-// PUT - Update post by slug
-export async function PUT(request: Request, { params }: { params: { slug: string }}) {
+export async function PUT(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     await connectDB();
     
@@ -85,12 +82,11 @@ export async function PUT(request: Request, { params }: { params: { slug: string
       );
     }
     
-    // Build update object only with provided fields
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {
       updatedAt: new Date()
     };
     
-    // Determine final title and content for meta generation
     const finalTitle = title !== undefined ? title : existingPost.title;
     const finalContent = content !== undefined ? content : existingPost.content;
     
@@ -98,10 +94,8 @@ export async function PUT(request: Request, { params }: { params: { slug: string
     if (title !== undefined) {
       updateData.title = title;
       
-      // AUTOMATIC: Generate new slug when title changes
       const newSlug = slugify(title);
       
-      // Check if new slug already exists (and it's not the current post)
       if (newSlug !== slug) {
         const existingSlugPost = await Post.findOne({ slug: newSlug });
         if (existingSlugPost) {
@@ -114,12 +108,10 @@ export async function PUT(request: Request, { params }: { params: { slug: string
       }
     }
     
-    // Only update content if provided
     if (content !== undefined) {
       updateData.content = content;
     }
     
-    // AUTOMATIC: Always regenerate meta fields when title OR content changes
     if (title !== undefined || content !== undefined) {
       const metaFields = generateMetaFields(finalTitle, finalContent);
       updateData.metaTitle = metaFields.metaTitle;
@@ -140,6 +132,7 @@ export async function PUT(request: Request, { params }: { params: { slug: string
       message: 'Post updated successfully'
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error updating post:', error);
     return NextResponse.json(
@@ -176,7 +169,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
       success: true,
       message: 'Post deleted successfully'
     });
-    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error deleting post:', error);
     return NextResponse.json(

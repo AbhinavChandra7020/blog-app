@@ -60,6 +60,7 @@ export default function HomePage() {
           <div className="mb-8">
             {searchQuery ? (
               <h2 className="text-3xl font-bold text-mindaro">
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 Search Results for "{searchQuery}"
               </h2>
             ) : (

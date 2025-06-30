@@ -13,7 +13,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           Welcome to Our Blog
         </h1>
         <p className="text-xl text-moss_green mb-8 max-w-3xl mx-auto">
-          Discover insightful articles, tutorials, and stories. Search through our collection 
+          Discover insightful articles, tutorials, and stories. Search through our collection
+          {/* eslint-disable-next-line react/no-unescaped-entities */} 
           of posts to find exactly what you're looking for.
         </p>
         

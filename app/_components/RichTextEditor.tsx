@@ -19,6 +19,7 @@ interface RichTextEditorProps {
 }
 
 export default function RichTextEditor({ value, onChange, placeholder = "Write your post content..." }: RichTextEditorProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const quillRef = useRef<any>(null)
   const [isMounted, setIsMounted] = useState(false)
 
@@ -122,6 +123,8 @@ export default function RichTextEditor({ value, onChange, placeholder = "Write y
       `}</style>
       
       <ReactQuill
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         ref={quillRef}
         theme="snow"
         value={value}

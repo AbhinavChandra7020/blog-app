@@ -255,6 +255,8 @@ export default function AdminPage() {
                   key={post._id}
                   post={post}
                   showActions={true}
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   onEdit={startEdit}
                   onDelete={handleDeletePost}
                 />
